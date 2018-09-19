@@ -12,7 +12,7 @@
  Plugin URI:  https://github.com/christopherkurth/funckxtions
  GitHub Plugin URI: https://github.com/christopherkurth/funckxtions
  Description: Zusatzfunktionen wie REST-API authentication; Entfernen der Generator Tags; Altersberechnung [ckx_age birthday="dd.mm.yy"]; Anzahl Beiträge [ckx_beitragsanzahl] und Kommentare [ckx_kommentaranzahl]; Mailadressen Verschleierung [ckx_mail]Adresse[/ckx_mail]
- Version:     2018-05-05-1800
+ Version:     1.0.1
  Author:      Christopher Kurth
  Author URI:  https://christopherkurth.com
  Text Domain: funckxtions
@@ -107,3 +107,21 @@ function ckx_email_verschleiern_function( $atts , $content = null ) {
 }
 
 add_shortcode( 'ckx_mail', 'ckx_email_verschleiern_function' );
+
+/**
+ *  Only load JS/CSS for Contact Form 7 when needed 
+ */ 
+function customize_cf7_dequeue() {
+    wp_dequeue_script( 'contact-form-7' );
+    wp_dequeue_style( 'contact-form-7' );
+  }
+  add_action( 'wp_enqueue_scripts', 'customize_cf7_dequeue' );
+  
+  function customize_cf7_enqueue( $content ) {
+    if ( has_shortcode( $content, 'contact-form-7' ) && function_exists( 'wpcf7_enqueue_styles' ) ) {
+      wpcf7_enqueue_styles();
+      wpcf7_enqueue_scripts();
+    }
+    return $content;
+  }
+  add_filter( 'the_content', 'customize_cf7_enqueue' );
